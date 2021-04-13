@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Circle</title>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <style type="text/css">
+            #map {
+                height: 100%;
+            }
+
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #floating-panel {
+                position: absolute;
+                top: 10px;
+                left: 25%;
+                z-index: 5;
+                background-color: #fff;
+                padding: 5px;
+                border: 1px solid #999;
+                text-align: center;
+                font-family: "Roboto", "sans-serif";
+                line-height: 30px;
+                padding-left: 10px;
+            }
+        </style>
+        <script>
+
+            function initMap() {
+                const directionsService = new google.maps.DirectionsService();
+                const directionsRenderer = new google.maps.DirectionsRenderer();
+                const map = new google.maps.Map(document.getElementById("map"),
+                {
+                    zoom: 20,
+                    center: {lat: 21.02741697802718, lng: 105.8354383889882}
+                });
+                directionsRenderer.setMap(map);
+
+                const onChangeHandler = function() {
+                    calculateAndDisplayRoute(directionsService,
+                    directionsRenderer);
+                };
+
+                document.getElementById("start")
+                .addEventListener("change", onChangeHandler);
+                document.getElementById("end")
+                .addEventListener("change", onChangeHandler);
+
+            
+                const circleCoords = [
+                    {lat:10.779868431831355, lng: 106.69989676802807},
+                    {lat: 21.02741697802718, lng: 105.8354383889882}
+                ]
+
+                for(let i = 0; i < circleCoords.length; i++)
+                {
+                    const postCircle = new google.maps.Circle(
+                {
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,
+                    map,
+                    center: circleCoords[i],
+                    radius: 13
+                });
+                }
+               
+
+            const triagleCoords = [
+                [{lat: 10.779985176809127, lng:106.69989364501734},
+                {lat:10.779790195990321, lng: 106.69980982598673 },
+                {lat:10.779803370373939, lng: 106.69999556895856}],
+                [
+                {lat: 10.780091224432693, lng: 106.69990490284378},
+                {lat:10.779756671463469, lng: 106.69968283242102 },
+                {lat:10.77974737315645, lng: 106.70010606851773}
+                ],
+                [
+                {lat: 21.027361524595804, lng: 105.83532615213737},
+                {lat:21.02753235955359, lng: 105.83544658675541 },
+                {lat:21.02735886912859, lng: 105.83555279681227}
+                ],
+                [
+                {lat: 21.027344528710774, lng: 105.83518441577601},
+                {lat:21.027647267570345, lng: 105.83550133167503},
+                {lat:21.027252066354094,lng: 105.83562918936124}
+                ]
+            ]
+            
+            for(let i = 0; i < triagleCoords.length; i++)
+            {
+                const postTriagle = new google.maps.Polygon(
+                {
+                    paths: triagleCoords[i],
+                    strokeColor: "FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 3,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,
+                }
+            );
+            postTriagle.setMap(map);
+            }
+
+            const contentString = [
+            '<h3>Bưu Điện Trung Tâm Thành Phố</h3><br>'
+                +'<p> Bưu điện trung tâm Sài Gòn là một trong những '+
+                    'công trình kiến trúc tiêu biểu tại Thành phố Hồ Chí Minh, '+
+                    'tọa lạc tại số 2, Công trường Công xã Paris, Quận 1.'+
+                    ' Đây là tòa nhà được người Pháp xây dựng trong khoảng'+
+                    ' năm 1886–1891 với phong cách châu Âu theo đồ án thiết kế '+
+                    'của kiến trúc sư Villedieu cùng phụ tá Foulhoux. '+
+                    'Đây là công trình kiến trúc mang phong cách phương Tây'+
+                    ' kết hợp với nét trang trí phương Đông. </p>',
+                '<h3>Văn Miếu Quốc Tử Giám</h3><br>'
+                + '<p>quần thể di tích đa dạng và phong phú hàng đầu '+
+                    'của thủ đô Hà Nội, nằm ở phía nam Kinh thành Thăng Long.'+
+                    ' Quần thể kiến trúc Văn Miếu – Quốc Tử Giám bao gồm:'+ 
+                    ' hồ Văn, khu Văn Miếu – Quốc Tử Giám và vườn Giám;'+
+                    ' trong đó, kiến trúc chủ thể là Văn Miếu (nơi thờ Khổng Tử) '+
+                    ' và Quốc Tử Giám. Với hơn 700 năm hoạt động,'+
+                    ' đã đào tạo hàng nghìn nhân tài cho đất nước,'+
+                    ' Quốc Tử Giám được coi như là trường đại học '+
+                    'đầu tiên của Việt Nam và cũng là biểu tượng '+
+                    'cho nền khoa cử thời phong kiến của nước này. </p>',        
+            ]
+
+            
+            for(let i = 0; i < contentString.length; i++)
+            {
+                const infowindow = new google.maps.InfoWindow(
+                    {content: contentString[i]}
+                );
+                const marker = new google.maps.Marker(
+                    {
+                        position: circleCoords[i],
+                        map,
+                        title: "hello",
+                    }
+                );
+
+                marker.addListener("click", () => {
+                    infowindow.open(map, marker);
+                });
+            }
+        }
+
+        function calculateAndDisplayRoute(directionsService,
+                directionsRenderer) {
+                    directionsService.route(
+                        {
+                            origin: {
+                                query: document.getElementById("start").value,
+                            },
+                            destination: {
+                                query: document.getElementById("end").value,
+                            },
+                            travelMode: google.maps.TravelMode.DRIVING,
+                        },
+                        (response, status) => {
+                            if(status === "OK"){
+                                directionsRenderer.setDirections(response);
+                            } else {
+                                window.alert("Directions request failed due to " + status);
+                            }
+                        }
+                    );
+                }
+            
+        </script>
+    </head>
+    <body>
+        <div id="floating-panel">
+            <b>Start: </b>
+            <select id="start">
+                <option value="
+                Bưu Điện Trung Tâm Thành Phố
+                ">
+                Bưu Điện Trung Tâm Thành Phố
+                </option>
+                <option value="
+                Văn Miếu Quốc Tử Giám
+                ">
+                Văn Miếu Quốc Tử Giám
+                </option>
+                <option value="
+                Kí túc xá Đại học giao thông vận tải phân hiệu tải TP.HCM
+                ">
+                Kí túc xá Đại học giao thông vận tải phân hiệu tải TP.HCM
+                </option>
+            </select>
+            <b>End: </b>
+            <select id="end">
+                <option value="
+                Bưu Điện Trung Tâm Thành Phố
+                ">
+                Bưu Điện Trung Tâm Thành Phố
+                </option>
+                <option value="
+                Văn Miếu Quốc Tử Giám
+                ">
+                Văn Miếu Quốc Tử Giám
+                </option>
+                <option value="
+                Kí túc xá Đại học giao thông vận tải phân hiệu tải TP.HCM
+                ">
+                Kí túc xá Đại học giao thông vận tải phân hiệu tải TP.HCM
+                </option>
+            </select>
+        </div>
+        <div id="map"></div>
+        <script
+        async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBIwzALxUPNbatRBj3Xi1Uhp0fFzwWNBkE&callback=initMap&libraries=&v=weekly"
+        ></script>
+    </body>
+</html>
